@@ -6,10 +6,14 @@ jobs:
     steps:
       - name: Clonar
         run: git clone --depth 1 https://gitlab.freedesktop.org/mesa/mesa.git .
-      - name: Construir
+      - name: Instalar dependencias
         run: |
-          sudo apt-get update && sudo apt-get install -y meson ninja-build
-          meson setup build
+          sudo apt-get update
+          sudo apt-get install -y python3-pip ninja-build
+          pip3 install meson==1.4.0
+      - name: Compilar
+        run: |
+          meson setup build -Dgallium-drivers=panfrost -Dvulkan-drivers=panfrost -Dbuildtype=release
           ninja -C build
       - name: Guardar Artifact
         uses: actions/upload-artifact@v4
