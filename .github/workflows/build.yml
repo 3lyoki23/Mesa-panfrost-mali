@@ -1,0 +1,19 @@
+name: Build Mesa
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar
+        run: git clone --depth 1 https://gitlab.freedesktop.org/mesa/mesa.git .
+      - name: Construir
+        run: |
+          sudo apt-get update && sudo apt-get install -y meson ninja-build
+          meson setup build
+          ninja -C build
+      - name: Guardar Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: salida-mesa
+          path: build/
+          
