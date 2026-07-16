@@ -4,16 +4,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Clonar
+      - name: Clonar Mesa
         run: git clone --depth 1 https://gitlab.freedesktop.org/mesa/mesa.git .
-      - name: Instalar dependencias
+      
+      - name: Instalar dependencias y Meson actualizado
         run: |
           sudo apt-get update
-          sudo apt-get install -y meson ninja-build build-essential python3-mako python3-jinja2 python3-ply libxcb-randr0-dev libx11-xcb-dev libxcb-dri3-dev libxcb-present-dev libxcb-sync-dev libxshmfence-dev libxxf86vm-dev libxrandr-dev libwayland-dev wayland-protocols libx11-dev libdrm-dev libexpat1-dev libelf-dev llvm-dev libclang-dev glslang-tools libvulkan-dev
+          sudo apt-get install -y meson ninja-build build-essential python3-mako python3-jinja2 python3-ply libxcb-randr0-dev libx11-xcb-dev libxcb-dri3-dev libxcb-present-dev libxcb-sync-dev libxshmfence-dev libxxf86vm-dev libxrandr-dev libwayland-dev wayland-protocols libx11-dev libdrm-dev libexpat1-dev libelf-dev llvm-dev libclang-dev glslang-tools libvulkan-dev python3-pip
+          # Instalamos la última versión de meson y forzamos su uso
+          pip3 install --upgrade meson
+          
       - name: Compilar
         run: |
+          # Forzamos al sistema a usar la versión instalada en .local/bin
+          export PATH=/home/runner/.local/bin:$PATH
           meson setup build -Dgallium-drivers=panfrost -Dvulkan-drivers=panfrost -Dbuildtype=release -Dglx=disabled -Degl=enabled -Dplatforms=wayland
           ninja -C build
+          
       - name: Guardar Artifact
         uses: actions/upload-artifact@v4
         with:
