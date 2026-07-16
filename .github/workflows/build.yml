@@ -8,14 +8,11 @@ jobs:
         run: git clone --depth 1 https://gitlab.freedesktop.org/mesa/mesa.git .
       - name: Instalar dependencias
         run: |
-          sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get update
-          sudo apt-get build-dep -y mesa
-          sudo apt-get install -y python3-pip
-          pip3 install meson==1.4.0
+          sudo apt-get install -y meson ninja-build build-essential python3-mako python3-jinja2 python3-ply libxcb-randr0-dev libx11-xcb-dev libxcb-dri3-dev libxcb-present-dev libxcb-sync-dev libxshmfence-dev libxxf86vm-dev libxrandr-dev libwayland-dev wayland-protocols libx11-dev libdrm-dev libexpat1-dev libelf-dev llvm-dev libclang-dev glslang-tools libvulkan-dev
       - name: Compilar
         run: |
-          meson setup build -Dgallium-drivers=panfrost -Dvulkan-drivers=panfrost -Dbuildtype=release
+          meson setup build -Dgallium-drivers=panfrost -Dvulkan-drivers=panfrost -Dbuildtype=release -Dglx=disabled -Degl=enabled -Dplatforms=wayland
           ninja -C build
       - name: Guardar Artifact
         uses: actions/upload-artifact@v4
